@@ -116,6 +116,8 @@ const createQuiz = asyncHandler(async (req, res) => {
 
   return res.status(201).json(new ApiResponse(201, quiz, "Quiz created successfully"));
 });
+
+
 const getQuizById = asyncHandler(async (req, res) => {
   const quiz = await Quiz.findById(req.params.id);
 
