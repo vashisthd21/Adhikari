@@ -14,21 +14,39 @@ const questionSchema = new mongoose.Schema({
     correctAnswer: {
         type: String,
         required: true,
-        validate: function(value) {
-            return this.options.includes(value);
+        validate: {
+            validator: function(value) {
+                return this.options.includes(value);
+            },message: 'Correct answer must be one of the provided options'
         }
     }, 
     subject: {
         type: String,
         required: true,
         trim: true
-    },
+    }, 
     negativeMarking: {
         type: Number,
         default: 0
     }
 })
-
+const sectionSchema = new mongoose.Schema({
+    subject: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function(value) {
+                return this.questions.every(q => q.subject === value);
+            },
+            message: 'All questions in a section must belong to the same subject'
+        }
+    },
+    questions: {
+        type: [questionSchema],
+        required: true,
+        validate: [questions => questions.length > 0, 'At least one question is required']
+    }
+});
 const quizSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -40,10 +58,10 @@ const quizSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    questions: {
-        type: [questionSchema],
+    sections: {
+        type: [sectionSchema],
         required: true,
-        validate: [questions => questions.length > 0, 'At least one question is required']
+        validate: [sections => sections.length > 0, 'At least one subject section is required']
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
