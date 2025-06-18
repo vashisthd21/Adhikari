@@ -94,29 +94,31 @@ import ApiResponse from "../utils/ApiResponse.js";
 import e from "express";
 
 const createQuiz = asyncHandler(async (req, res) => {
-  const { title, description, sections, username } = req.body;
+  const { title, description, sections, createdBy, questions } = req.body;
 
   if (!title || !description || !sections || sections.length === 0) {
     throw new ApiError(400, "Title, description, and sections are required");
   }
 
+  if (!createdBy) {
+    throw new ApiError(400, "Creator username is required");
+  }
+
   // Find user by username
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username: createdBy });
   if (!user) {
     throw new ApiError(404, "User not found");
   }
 
-  // Create quiz with user._id as createdBy
   const quiz = await Quiz.create({
     title,
     description,
-    questions,
+    sections,
     createdBy: user._id
   });
 
   return res.status(201).json(new ApiResponse(201, quiz, "Quiz created successfully"));
 });
-
 
 const getQuizById = asyncHandler(async (req, res) => {
   const quiz = await Quiz.findById(req.params.id);
