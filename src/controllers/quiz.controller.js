@@ -94,10 +94,10 @@ import ApiResponse from "../utils/ApiResponse.js";
 import e from "express";
 
 const createQuiz = asyncHandler(async (req, res) => {
-  const { title, description, questions, username } = req.body;
+  const { title, description, sections, username } = req.body;
 
-  if (!title || !description || !questions || !Array.isArray(questions)) {
-    throw new ApiError(400, "Title, description, and questions are required");
+  if (!title || !description || !sections || sections.length === 0) {
+    throw new ApiError(400, "Title, description, and sections are required");
   }
 
   // Find user by username
